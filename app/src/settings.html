@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blixt &ndash; Einstellungen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="settings-window">
+    <div class="settings-title">Blixt &middot; Einstellungen</div>
+
+    <!-- Anbieter -->
+    <div class="section">
+      <div class="section-label">Anbieter</div>
+      <div class="field">
+        <select id="provider">
+          <option value="groq">Groq (Standard, kostenloses Kontingent)</option>
+          <option value="openai">OpenAI (eigener kostenpflichtiger Schl&uuml;ssel)</option>
+          <option value="local">Lokal (Platzhalter, noch nicht aktiv)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- API Key -->
+    <div class="section">
+      <div class="section-label">API-Schl&uuml;ssel <span id="providerName" class="muted"></span></div>
+
+      <div id="keyDisplayArea" style="display:none">
+        <div class="key-display"><span class="lock">&#128274;</span> <span id="keyDisplayValue"></span></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn" id="changeKeyBtn">&Auml;ndern</button>
+          <button class="btn danger" id="deleteKeyBtn">L&ouml;schen</button>
+          <button class="btn" id="testBtn">Verbindung testen</button>
+        </div>
+      </div>
+
+      <div id="keyInputArea">
+        <div class="field"><input type="password" id="apiKeyInput" placeholder="Schl&uuml;ssel einf&uuml;gen" autocomplete="off" /></div>
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn primary" id="saveKeyBtn">Speichern</button>
+          <button class="btn" id="pasteKeyBtn">Aus Zwischenablage</button>
+        </div>
+        <div class="info-text" id="keyHint">Bleibt lokal im Windows Credential Manager.</div>
+      </div>
+
+      <div id="keyMsg" class="msg" style="display:none"></div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Modelle -->
+    <div class="section">
+      <div class="section-label">Modelle</div>
+      <div class="field">
+        <label>Transkription</label>
+        <input type="text" id="transcriptionModel" placeholder="whisper-large-v3-turbo" />
+      </div>
+      <div class="field">
+        <label>Cloud-Textmodell (Verbessern / Entsch&auml;rfen / Emoji / &Uuml;bersetzen / Prompt)</label>
+        <input type="text" id="chatModel" placeholder="llama-3.3-70b-versatile" />
+      </div>
+      <div class="info-text">Groq: <code>whisper-large-v3-turbo</code> + <code>llama-3.3-70b-versatile</code> &middot; OpenAI: <code>whisper-1</code> + <code>gpt-4o-mini</code></div>
+
+      <div class="field" style="margin-top:10px">
+        <label>Textmodell-Anbieter</label>
+        <select id="chatProvider">
+          <option value="groq">Groq (Cloud)</option>
+          <option value="openai">OpenAI (Cloud)</option>
+          <option value="local">Lokal &ndash; Ollama (offline, kein Schl&uuml;ssel)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Lokales Modell (Ollama)</label>
+        <input type="text" id="localChatModel" placeholder="qwen2.5:7b" />
+      </div>
+      <div class="info-text">&bdquo;Lokal&ldquo; schickt die Transform-Modi an deinen Ollama-Server (localhost:11434) &mdash; ohne Cloud/Schl&uuml;ssel.</div>
+
+      <div class="field" style="margin-top:10px">
+        <label>Lokaler Whisper-Server (Transkriptions-Anbieter &bdquo;Lokal&ldquo;)</label>
+        <input type="text" id="localSttUrl" placeholder="http://127.0.0.1:8765/v1" />
+      </div>
+      <div class="info-text">F&uuml;r <b>voll offline</b>: oben den <b>Anbieter</b> auf &bdquo;Lokal&ldquo; stellen. Braucht den laufenden whisper.cpp-Server unter dieser URL.</div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Aufnahme -->
+    <div class="section">
+      <div class="section-label">Aufnahme</div>
+      <div class="field">
+        <label>Sprache</label>
+        <select id="language">
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+          <option value="">Auto-Erkennung</option>
+        </select>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="autoPasteEnabled" />
+        <label for="autoPasteEnabled">Automatisch am Cursor einf&uuml;gen</label>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Hotkeys (Info) -->
+    <div class="section">
+      <div class="section-label">Hotkeys</div>
+      <div class="hotkey-grid">
+        <span>Ctrl+Shift+1</span><span>Diktat</span>
+        <span>Ctrl+Shift+2</span><span>Verbessern</span>
+        <span>Ctrl+Shift+3</span><span>Entsch&auml;rfen</span>
+        <span>Ctrl+Shift+4</span><span>Emoji</span>
+        <span>Ctrl+Shift+5</span><span>&Uuml;bersetzen DE&rarr;EN</span>
+        <span>Ctrl+Shift+6</span><span>Prompt (EN)</span>
+        <span>Ctrl+Shift+7</span><span>Prompt (DE)</span>
+      </div>
+      <div class="info-text">Toggle-Modus: einmal dr&uuml;cken = Aufnahme, nochmal = fertig.</div>
+    </div>
+
+    <div class="btn-row"><button class="btn primary" id="saveSettingsBtn">Einstellungen speichern</button></div>
+    <div id="settingsMsg" class="msg" style="display:none"></div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

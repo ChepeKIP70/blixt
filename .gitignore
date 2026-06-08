@@ -1,0 +1,21 @@
+# Build-Artefakte (nicht ins Repo)
+/app/node_modules/
+/app/src-tauri/target/
+/app/src-tauri/gen/schemas/
+/dist/
+
+# Interne Dokumente (nicht veroeffentlichen)
+/00_Projektsteuerung/
+/ANALYSE.md
+
+# Lokale Konfiguration / Geheimnisse
+*.local
+.env
+secrets.*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
