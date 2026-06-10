@@ -1,7 +1,8 @@
 // Anbieter-Schicht (provider layer): kapselt Transkription + Textmodell hinter EINER Schnittstelle.
 // Groq und OpenAI sprechen dieselbe OpenAI-kompatible API (gleiche /audio/transcriptions- und
-// /chat/completions-Form) -> nur Basis-URL + Modellnamen unterscheiden sich. "Local" ist ein
-// Platzhalter fuer kuenftiges whisper.cpp/whisper-rs (offline, kein Schluessel).
+// /chat/completions-Form) -> nur Basis-URL + Modellnamen unterscheiden sich. "Local" = Ollama
+// (Textmodell, 127.0.0.1:11434) bzw. der whisper.cpp-Server (Transkription, via transcribe_local()
+// mit der Server-URL aus den Einstellungen) -- beide offline, kein Schluessel.
 //
 // Bewusst als Enum statt `dyn Trait`: vermeidet async-trait/Dyn-Probleme, reicht fuer 3 Anbieter.
 
@@ -41,8 +42,10 @@ impl Provider {
         language: Option<&str>,
     ) -> Result<String, String> {
         if *self == Provider::Local {
+            // Lokale Transkription laeuft NICHT ueber diese Methode -- sie kennt die Whisper-Server-URL
+            // aus den Einstellungen nicht. main.rs ruft dafuer direkt transcribe_local() auf.
             return Err(
-                "Lokale Transkription (whisper.cpp-Server) ist noch nicht eingebunden - kommt in Stufe B. Transkriptions-Anbieter bitte auf Groq/OpenAI stellen."
+                "Interner Fehler: lokale Transkription muss ueber transcribe_local() laufen."
                     .to_string(),
             );
         }

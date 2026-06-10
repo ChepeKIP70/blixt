@@ -85,7 +85,10 @@ async fn do_toggle(app: &AppHandle, mode: Mode) -> Result<(), String> {
         inner.is_recording
     };
     if recording {
-        do_stop_and_process(app).await
+        let result = do_stop_and_process(app).await;
+        // HUD nach kurzer Ergebnis-Anzeige wieder ausblenden (egal ob Erfolg oder Fehler).
+        schedule_hide_hud(app);
+        result
     } else {
         do_start(app, mode)
     }
@@ -119,6 +122,9 @@ fn do_start(app: &AppHandle, mode: Mode) -> Result<(), String> {
     inner.is_recording = true;
     drop(inner);
 
+    // HUD einblenden, damit man die Aufnahme im Bild sieht (Fenster startet sonst versteckt).
+    // Bewusst OHNE Fokus: das Zielfenster wurde oben gesichert, das Einfuegen stellt es wieder her.
+    show_hud(app);
     app.emit("recording-started", mode.label()).ok();
     Ok(())
 }
@@ -245,6 +251,34 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
 }
 
 // ── Fenster-Helfer ────────────────────────────────────────────────────────────
+
+/// Zeigt das rahmenlose Statusfenster als HUD (Head-up-Display) waehrend Aufnahme/Verarbeitung.
+fn show_hud(app: &AppHandle) {
+    if let Some(win) = app.get_webview_window("main") {
+        win.show().ok();
+    }
+}
+
+/// Blendet das HUD nach kurzer Anzeige (4 s) wieder aus -- aber nur, wenn nicht inzwischen
+/// eine neue Aufnahme laeuft (sonst wuerde das gerade gezeigte HUD weggerissen).
+fn schedule_hide_hud(app: &AppHandle) {
+    let handle = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_secs(4));
+        let still_recording = handle
+            .state::<AppState>()
+            .0
+            .lock()
+            .map(|inner| inner.is_recording)
+            .unwrap_or(false);
+        if still_recording {
+            return;
+        }
+        if let Some(win) = handle.get_webview_window("main") {
+            win.hide().ok();
+        }
+    });
+}
 
 fn toggle_main_window(app: &AppHandle) {
     if let Some(win) = app.get_webview_window("main") {

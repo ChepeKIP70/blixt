@@ -11,7 +11,11 @@ Windows speech-to-text with smart modes — cloud or fully offline.
 
 </div>
 
-> ⚠️ **Screenshot / demo GIF goes here** — record a short clip (e.g. dictating in Notepad, then the "Vent" mode turning an angry rant into a calm message) and drop it in `docs/`.
+<!-- DEMO: record a ~60s clip, save it as docs/demo.gif, then uncomment the next line.
+     Suggested shots: dictation in Notepad -> "Vent" mode calming an angry rant ->
+     pull the network cable and run it again fully offline (whisper.cpp + Ollama).
+![Blixt demo](docs/demo.gif)
+-->
 
 ---
 
