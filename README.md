@@ -71,6 +71,18 @@ npm run build -- --no-bundle                      # portable .exe
 
 The binary is created at `app/src-tauri/target/release/blixt.exe`.
 
+### First run
+
+Launch `blixt.exe`. **No window opens — Blixt lives in the system tray** (the orange microphone icon, bottom-right; it may be hidden behind the `^` arrow). Left-click it for the status window, right-click for Settings / Quit.
+
+**Fastest way to try it (cloud, ~2 min):**
+
+1. Tray icon → **Settings** → **Provider: Groq**.
+2. Grab a free API key at [console.groq.com/keys](https://console.groq.com/keys), paste it, and click **Test connection**.
+3. Click into any text field, press **`Ctrl+Shift+1`**, speak, then press it again — your text appears at the cursor.
+
+No API key wanted? Run it fully offline instead → see [Offline mode](#offline-mode).
+
 ## Configuration
 
 Open the tray icon → **Settings**. Transcription and the text model are chosen **independently**:
@@ -178,6 +190,18 @@ npm run build -- --no-bundle                      # portable .exe
 ```
 
 Ergebnis: `app/src-tauri/target/release/blixt.exe`.
+
+### Erster Start
+
+`blixt.exe` starten. **Es öffnet sich kein Fenster — Blixt lebt im System-Tray** (oranges Mikrofon-Symbol unten rechts, evtl. hinter dem `^`-Pfeil versteckt). Linksklick zeigt das Statusfenster, Rechtsklick öffnet Einstellungen / Beenden.
+
+**Schnellster Test (Cloud, ~2 Min):**
+
+1. Tray-Symbol → **Einstellungen** → **Anbieter: Groq**.
+2. Kostenlosen API-Schlüssel auf [console.groq.com/keys](https://console.groq.com/keys) holen, einfügen, **Verbindung testen**.
+3. In ein beliebiges Textfeld klicken, **`Strg+Umschalt+1`** drücken, sprechen, nochmal drücken — der Text erscheint am Cursor.
+
+Keinen Schlüssel gewünscht? Stattdessen komplett offline → siehe [Offline-Modus](#offline-modus).
 
 ## Konfiguration
 
