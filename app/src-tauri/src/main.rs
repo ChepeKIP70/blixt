@@ -125,7 +125,11 @@ fn do_start(app: &AppHandle, mode: Mode) -> Result<(), String> {
     // HUD einblenden, damit man die Aufnahme im Bild sieht (Fenster startet sonst versteckt).
     // Bewusst OHNE Fokus: das Zielfenster wurde oben gesichert, das Einfuegen stellt es wieder her.
     show_hud(app);
-    app.emit("recording-started", mode.label()).ok();
+    app.emit(
+        "recording-started",
+        serde_json::json!({ "label": mode.label(), "hotkey": mode.default_hotkey() }),
+    )
+    .ok();
     Ok(())
 }
 
@@ -317,10 +321,12 @@ fn main() {
         ])
         .setup(|app| {
             // Tray mit Mikrofon-Icon (eingebettet -> funktioniert im portablen Build).
+            let show_item =
+                MenuItem::with_id(app, "show", "Fenster anzeigen", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Blixt beenden", true, None::<&str>)?;
             let settings_item =
                 MenuItem::with_id(app, "settings", "Einstellungen", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&settings_item, &quit_item])?;
+            let menu = Menu::with_items(app, &[&show_item, &settings_item, &quit_item])?;
 
             let mic_icon = tauri::image::Image::from_bytes(include_bytes!("../icons/tray-mic.png"))?;
 
@@ -331,6 +337,12 @@ fn main() {
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => app.exit(0),
                     "settings" => open_settings_window(app),
+                    "show" => {
+                        if let Some(win) = app.get_webview_window("main") {
+                            win.show().ok();
+                            win.set_focus().ok();
+                        }
+                    }
                     _ => {}
                 })
                 .on_tray_icon_event(|tray, event| {
