@@ -81,7 +81,9 @@ fn http_client() -> Result<reqwest::Client, String> {
     reqwest::Client::builder()
         .no_proxy()
         .connect_timeout(std::time::Duration::from_secs(10))
-        .timeout(std::time::Duration::from_secs(30))
+        // 120 s statt 30 s: der ERSTE Aufruf an ein lokales Modell (Ollama/whisper.cpp) laedt es
+        // erst in den Speicher (kalt ~60 s) -> 30 s wuerde timeouten und auf Roh-Text zurueckfallen.
+        .timeout(std::time::Duration::from_secs(120))
         .build()
         .map_err(|e| format!("HTTP-Client-Fehler: {}", e))
 }
