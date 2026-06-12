@@ -13,6 +13,11 @@ pub enum Mode {
     PromptDe,  // grobe Absicht (DE) sprechen -> strukturierter KI-Prompt (DE)
 }
 
+/// Zweiter Pass nach Entschärfen (Vent): glättet die Sprache des ersten Durchlaufs.
+/// Kleine lokale Modelle erzeugen beim Umschreiben Grammatikfehler und Fremdwort-Einsprengsel;
+/// dieser Lektor-Pass korrigiert sie, ohne Bedeutung oder Ich-Perspektive zu ändern.
+pub const VENT_POLISH_PROMPT: &str = "Du bist ein Lektor. Verbessere den folgenden deutschen Text: korrigiere Rechtschreibung und Grammatik, ersetze versehentlich eingestreute fremdsprachige Wörter durch das passende deutsche Wort, verbessere den Lesefluss. Behalte Bedeutung, Ich-Perspektive und Tonfall exakt bei. Gib NUR den verbesserten Text zurück, keine Erklärungen.";
+
 impl Mode {
     pub fn all() -> [Mode; 7] {
         [

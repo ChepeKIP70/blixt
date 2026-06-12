@@ -217,7 +217,7 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
             }
         };
         app.emit("status-update", mode.processing_label()).ok();
-        match chat_provider
+        let first = match chat_provider
             .chat(mode.system_prompt(), &text, &chat_key, chat_model, mode.temperature())
             .await
         {
@@ -226,6 +226,21 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
                 app.emit("show-error", &e).ok();
                 text
             }
+        };
+        // Entschaerfen: zweiter Pass glaettet die Sprache. Kleine lokale Modelle erzeugen beim
+        // Umschreiben Grammatikfehler/Fremdwort-Einsprengsel; ein Lektor-Pass buegelt das aus.
+        // Schlaegt er fehl, behalten wir die erste (entschaerfte) Fassung.
+        if mode == Mode::Vent {
+            app.emit("status-update", "Wird sprachlich geglättet ...").ok();
+            match chat_provider
+                .chat(modes::VENT_POLISH_PROMPT, &first, &chat_key, chat_model, 0.2)
+                .await
+            {
+                Ok(t) => t,
+                Err(_) => first,
+            }
+        } else {
+            first
         }
     } else {
         text
