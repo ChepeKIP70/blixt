@@ -52,7 +52,7 @@ Blixt is an independent **Windows** take, derived from the macOS app [blitztext-
 | `Ctrl+Shift+2` | **Improve** | Tidy up spelling, grammar, flow |
 | `Ctrl+Shift+3` | **Vent** | Turn an angry rant into a calm, clear message |
 | `Ctrl+Shift+4` | **Emoji** | Add fitting emojis to your text |
-| `Ctrl+Shift+5` | **Translate** | Speak German → get English text |
+| `Ctrl+Shift+5` | **Translate** | German ↔ English (direction auto-detected) |
 | `Ctrl+Shift+6` | **Prompt (EN)** | Speak a rough idea → a structured AI prompt in English |
 | `Ctrl+Shift+7` | **Prompt (DE)** | Same, output in German |
 
@@ -172,7 +172,7 @@ Blixt ist eine eigenständige **Windows**-Variante, abgeleitet aus der macOS-App
 | `Ctrl+Shift+2` | **Verbessern** | Rechtschreibung, Grammatik, Lesefluss |
 | `Ctrl+Shift+3` | **Entschärfen** | Wütendes Reden → ruhige, klare Nachricht |
 | `Ctrl+Shift+4` | **Emoji** | Passende Emojis in den Text |
-| `Ctrl+Shift+5` | **Übersetzen** | Deutsch sprechen → englischer Text |
+| `Ctrl+Shift+5` | **Übersetzen** | Deutsch ↔ Englisch (Richtung automatisch erkannt) |
 | `Ctrl+Shift+6` | **Prompt (EN)** | Grobe Idee sprechen → strukturierter KI-Prompt auf Englisch |
 | `Ctrl+Shift+7` | **Prompt (DE)** | Dasselbe, Ausgabe auf Deutsch |
 

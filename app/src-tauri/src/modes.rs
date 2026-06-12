@@ -8,7 +8,7 @@ pub enum Mode {
     Improve,   // + sprachliche Aufpolierung (Lektorat)
     Vent,      // Frust -> klare, respektvolle Nachricht
     Emoji,     // + passende Emojis
-    Translate, // Deutsch sprechen -> englischer Text
+    Translate, // DE <-> EN (Richtung automatisch erkannt)
     Prompt,    // grobe Absicht (DE) sprechen -> strukturierter KI-Prompt (EN)
     PromptDe,  // grobe Absicht (DE) sprechen -> strukturierter KI-Prompt (DE)
 }
@@ -32,7 +32,7 @@ impl Mode {
             Mode::Improve => "Verbessern",
             Mode::Vent => "Entschaerfen",
             Mode::Emoji => "Emoji",
-            Mode::Translate => "Uebersetzen DE->EN",
+            Mode::Translate => "Uebersetzen DE ↔ EN",
             Mode::Prompt => "Prompt (EN)",
             Mode::PromptDe => "Prompt (DE)",
         }
@@ -88,7 +88,7 @@ impl Mode {
             Mode::Improve => "Du bist ein Lektor und Schreibassistent. Verbessere den folgenden Text:\n- Korrigiere Rechtschreibung und Grammatik\n- Verbessere die Formulierung und den Lesefluss\n- Behalte die ursprüngliche Bedeutung bei\n- Gib NUR den verbesserten Text zurück, keine Erklärungen\n- Verwende einen neutralen, klaren Ton",
             Mode::Vent => "Du erhältst ein emotional gesprochenes Transkript. Erkenne zuerst das eigentliche Ziel, Anliegen und den wahren Frust der Person. Formuliere daraus eine klare, respektvolle und wirksame Nachricht, mit der die Person ihr Ziel eher erreicht. Bewahre relevante Fakten, konkrete Probleme, Grenzen, Erwartungen und die nötige Dringlichkeit. Entferne Beleidigungen, Drohungen, Sarkasmus, Unterstellungen und unnötige Eskalation. Wenn mehrere Vorwürfe genannt werden, verdichte sie auf die entscheidenden Kernpunkte. Der Ton soll ruhig, menschlich, bestimmt und lösungsorientiert sein. Gib NUR die fertige Nachricht zurück.",
             Mode::Emoji => "Du erhältst ein gesprochenes Transkript. Gib den Text möglichst originalgetreu zurück, aber füge passende Emojis ein. Setze regelmäßig passende Emojis ein, etwa alle 1-2 Sätze. Korrigiere offensichtliche Sprach- und Grammatikfehler. Behalte den Stil und die Bedeutung bei. Gib NUR den Text mit Emojis zurück, keine Erklärungen.",
-            Mode::Translate => "Du bist ein professioneller Übersetzer. Übersetze den folgenden deutschen Text in natürliches, flüssiges Englisch. Korrigiere offensichtliche Versprecher und Füllwörter. Bewahre Bedeutung, Tonfall und Absicht. Gib NUR die englische Übersetzung zurück, keine Erklärungen, keine Anmerkungen.",
+            Mode::Translate => "Du bist ein professioneller Übersetzer. Erkenne die Sprache des folgenden Textes: Ist er Deutsch, übersetze ihn in natürliches, flüssiges Englisch; ist er Englisch, übersetze ihn in natürliches, flüssiges Deutsch. Korrigiere offensichtliche Versprecher und Füllwörter. Bewahre Bedeutung, Tonfall und Absicht. Gib NUR die Übersetzung zurück, keine Erklärungen, keine Anmerkungen.",
             Mode::Prompt => "Du bist ein Prompt-Engineering-Assistent. Der Nutzer beschreibt auf Deutsch eine grobe Absicht oder Idee. Forme daraus einen klaren, gut strukturierten Prompt fuer ein KI-Sprachmodell, und zwar AUF ENGLISCH. Struktur: Rolle, Kontext, konkrete Aufgabe, relevante Randbedingungen und gewuenschtes Ausgabeformat - soweit aus der Eingabe ableitbar. Erfinde keine Fakten hinzu, die nicht gesagt wurden. Gib NUR den fertigen englischen Prompt zurueck, keine Vorrede, keine Erklaerungen.",
             Mode::PromptDe => "Du bist ein Prompt-Engineering-Assistent. Der Nutzer beschreibt eine grobe Absicht oder Idee. Forme daraus einen klaren, gut strukturierten Prompt fuer ein KI-Sprachmodell, AUF DEUTSCH. Struktur: Rolle, Kontext, konkrete Aufgabe, relevante Randbedingungen und gewuenschtes Ausgabeformat - soweit aus der Eingabe ableitbar. Erfinde keine Fakten hinzu, die nicht gesagt wurden. Gib NUR den fertigen deutschen Prompt zurueck, keine Vorrede, keine Erklaerungen.",
         }
