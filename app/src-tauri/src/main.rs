@@ -162,17 +162,24 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
     let provider = Provider::from_id(&s.provider);
 
     app.emit("status-update", "Wird transkribiert ...").ok();
+    // Transkriptions-Sprache: der EN->DE-Modus erwartet ENGLISCHE Sprache -> sonst verhoert sich
+    // Whisper mit der (deutschen) Standardsprache. Alle anderen Modi nutzen die Einstellung.
+    let stt_lang = if mode == Mode::TranslateEnDe {
+        "en"
+    } else {
+        s.language.as_str()
+    };
     // Lokale Transkription läuft über den whisper.cpp-Server (kein Schlüssel);
     // Cloud-Anbieter brauchen einen Schlüssel.
     let transcribe_result = if provider == Provider::Local {
         // "localhost" -> "127.0.0.1": feste IPv4-Loopback, funktioniert auch offline/mit VPN.
         let stt_url = s.local_stt_url.replace("localhost", "127.0.0.1");
-        provider::transcribe_local(&stt_url, &wav_path, &s.transcription_model, Some(&s.language)).await
+        provider::transcribe_local(&stt_url, &wav_path, &s.transcription_model, Some(stt_lang)).await
     } else {
         match settings::get_api_key(&s.provider) {
             Ok(api_key) => {
                 provider
-                    .transcribe(&wav_path, &api_key, &s.transcription_model, Some(&s.language))
+                    .transcribe(&wav_path, &api_key, &s.transcription_model, Some(stt_lang))
                     .await
             }
             Err(e) => Err(e),
