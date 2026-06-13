@@ -299,6 +299,19 @@ fn schedule_hide_hud(app: &AppHandle) {
     });
 }
 
+/// Platziert das Statusfenster initial rechts-mittig am Bildschirmrand.
+/// Danach ist es per Kopfzeile (data-tauri-drag-region) frei verschiebbar.
+fn position_right_center(win: &tauri::WebviewWindow) {
+    if let (Ok(Some(monitor)), Ok(wsize)) = (win.primary_monitor(), win.outer_size()) {
+        let msize = monitor.size();
+        let mpos = monitor.position();
+        let margin = (24.0 * monitor.scale_factor()) as i32;
+        let x = mpos.x + msize.width as i32 - wsize.width as i32 - margin;
+        let y = mpos.y + (msize.height as i32 - wsize.height as i32) / 2;
+        win.set_position(tauri::PhysicalPosition::new(x, y)).ok();
+    }
+}
+
 fn toggle_main_window(app: &AppHandle) {
     if let Some(win) = app.get_webview_window("main") {
         if win.is_visible().unwrap_or(false) {
@@ -335,6 +348,11 @@ fn main() {
             test_connection,
         ])
         .setup(|app| {
+            // Statusfenster initial rechts-mittig platzieren (per Kopfzeile verschiebbar).
+            if let Some(win) = app.get_webview_window("main") {
+                position_right_center(&win);
+            }
+
             // Tray mit Mikrofon-Icon (eingebettet -> funktioniert im portablen Build).
             let show_item =
                 MenuItem::with_id(app, "show", "Fenster anzeigen", true, None::<&str>)?;

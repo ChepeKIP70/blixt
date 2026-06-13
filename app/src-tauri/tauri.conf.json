@@ -20,7 +20,7 @@
         "visible": false,
         "skipTaskbar": true,
         "alwaysOnTop": true,
-        "center": true
+        "center": false
       },
       {
         "label": "settings",

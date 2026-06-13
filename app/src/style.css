@@ -23,7 +23,8 @@ body {
 
 /* ── Statusfenster (Tray) ── */
 .status-window { padding: 16px 18px; }
-.brand { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.brand { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: move; }
+.drag-hint { margin-left: auto; font-size: 10px; font-weight: 400; color: var(--muted); letter-spacing: .3px; }
 .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
 .status-line { margin-top: 12px; font-size: 14px; color: var(--muted); }
 .status-line.recording { color: var(--danger); }
