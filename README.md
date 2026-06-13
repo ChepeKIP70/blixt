@@ -15,7 +15,7 @@ Windows speech-to-text with smart modes — cloud or fully offline.
 
 ![Blixt demo](docs/demo.gif)
 
-▶️ **[Watch the full demo (with sound)](docs/Blixt-Demo.mp4)** — dictation, smart modes, speak-an-idea-to-Claude, and the offline "pull the plug" moment.
+▶️ **[Watch / download the full demo with sound](https://raw.githubusercontent.com/ChepeKIP70/blixt/main/docs/Blixt-Demo.mp4)** — dictation, smart modes, speak-an-idea-to-Claude, and the offline "pull the plug" moment.
 
 </div>
 
