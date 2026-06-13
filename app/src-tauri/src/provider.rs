@@ -159,7 +159,10 @@ async fn transcribe_openai_compatible(
     if status != 200 {
         return Err(api_error("Transkription", status, &body));
     }
-    let text = body.trim().to_string();
+    // whisper.cpp liefert laengere Transkripte oft in mehreren Segmenten, getrennt durch
+    // Zeilenumbrueche -> die wuerden beim Einfuegen als Absaetze in Word landen. Fuer einen
+    // durchgehenden Fliesstext alle Whitespace-Folgen (inkl. \n) zu einem Leerzeichen falten.
+    let text = body.split_whitespace().collect::<Vec<_>>().join(" ");
     if text.is_empty() {
         return Err("Transkription fehlgeschlagen - leere Antwort.".to_string());
     }
