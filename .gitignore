@@ -8,6 +8,9 @@
 /00_Projektsteuerung/
 /ANALYSE.md
 
+# Roh-Aufnahmen / Videoschnitt (nur die fertigen docs/demo.gif + docs/*.mp4 kommen ins Repo)
+/GIF Aufnahmen/
+
 # Lokale Konfiguration / Geheimnisse
 *.local
 .env

@@ -11,11 +11,13 @@ Windows speech-to-text with smart modes — cloud or fully offline.
 
 </div>
 
-<!-- DEMO: record a ~60s clip, save it as docs/demo.gif, then uncomment the next line.
-     Suggested shots: dictation in Notepad -> "Vent" mode calming an angry rant ->
-     pull the network cable and run it again fully offline (whisper.cpp + Ollama).
+<div align="center">
+
 ![Blixt demo](docs/demo.gif)
--->
+
+▶️ **[Watch the full demo (with sound)](docs/Blixt-Demo.mp4)** — dictation, smart modes, speak-an-idea-to-Claude, and the offline "pull the plug" moment.
+
+</div>
 
 ---
 
