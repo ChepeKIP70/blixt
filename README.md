@@ -52,9 +52,10 @@ Blixt is an independent **Windows** take, derived from the macOS app [blitztext-
 | `Ctrl+Shift+2` | **Improve** | Tidy up spelling, grammar, flow |
 | `Ctrl+Shift+3` | **Vent** | Turn an angry rant into a calm, clear message |
 | `Ctrl+Shift+4` | **Emoji** | Add fitting emojis to your text |
-| `Ctrl+Shift+5` | **Translate** | German ↔ English (direction auto-detected) |
-| `Ctrl+Shift+6` | **Prompt (EN)** | Speak a rough idea → a structured AI prompt in English |
-| `Ctrl+Shift+7` | **Prompt (DE)** | Same, output in German |
+| `Ctrl+Shift+5` | **Translate DE→EN** | Speak German → get English text |
+| `Ctrl+Shift+6` | **Translate EN→DE** | Speak English → get German text |
+| `Ctrl+Shift+7` | **Prompt (EN)** | Speak a rough idea → a structured AI prompt in English |
+| `Ctrl+Shift+8` | **Prompt (DE)** | Same, output in German |
 
 Toggle recording: press once to start, press again to finish. The result lands on the clipboard and is auto-pasted at the cursor.
 
@@ -130,7 +131,7 @@ Blixt was built in a single focused session by someone who is **not a Rust devel
 
 Based on [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) by **cmagnussen** (MIT License). Blixt is an independent re-implementation for Windows (Tauri/Rust), not a code fork — with its **own name, icon and branding** as required by the original project's trademark notice.
 
-**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, a fully offline mode, and two extra modes (Translate, Prompt).
+**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, a fully offline mode, and extra modes (Translate DE→EN and EN→DE, Prompt EN/DE).
 
 ## Contributing
 
@@ -172,9 +173,10 @@ Blixt ist eine eigenständige **Windows**-Variante, abgeleitet aus der macOS-App
 | `Ctrl+Shift+2` | **Verbessern** | Rechtschreibung, Grammatik, Lesefluss |
 | `Ctrl+Shift+3` | **Entschärfen** | Wütendes Reden → ruhige, klare Nachricht |
 | `Ctrl+Shift+4` | **Emoji** | Passende Emojis in den Text |
-| `Ctrl+Shift+5` | **Übersetzen** | Deutsch ↔ Englisch (Richtung automatisch erkannt) |
-| `Ctrl+Shift+6` | **Prompt (EN)** | Grobe Idee sprechen → strukturierter KI-Prompt auf Englisch |
-| `Ctrl+Shift+7` | **Prompt (DE)** | Dasselbe, Ausgabe auf Deutsch |
+| `Ctrl+Shift+5` | **Übersetzen DE→EN** | Deutsch sprechen → englischer Text |
+| `Ctrl+Shift+6` | **Übersetzen EN→DE** | Englisch sprechen → deutscher Text |
+| `Ctrl+Shift+7` | **Prompt (EN)** | Grobe Idee sprechen → strukturierter KI-Prompt auf Englisch |
+| `Ctrl+Shift+8` | **Prompt (DE)** | Dasselbe, Ausgabe auf Deutsch |
 
 Toggle-Aufnahme: einmal drücken = Start, nochmal drücken = fertig. Das Ergebnis landet in der Zwischenablage und wird am Cursor eingefügt.
 
@@ -250,7 +252,7 @@ Blixt entstand in einer einzigen fokussierten Sitzung — von jemandem, der **ke
 
 Basiert auf [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) von **cmagnussen** (MIT-Lizenz). Blixt ist eine eigenständige Neu-Implementierung für Windows (Tauri/Rust), **kein** Code-Fork — mit **eigenem Namen, Icon und Branding**, wie es der Marken-Hinweis des Originals verlangt.
 
-**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, ein komplett offline-Modus, und zwei zusätzliche Modi (Übersetzen, Prompt).
+**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, ein komplett offline-Modus, und zusätzliche Modi (Übersetzen DE→EN und EN→DE, Prompt EN/DE).
 
 ## Mitwirken
 
