@@ -217,7 +217,13 @@
 
     </div>
   </div>
-  <!-- Render-Helfer: hero.html?2x zoomt die Stage fuer den 2560x1280-Export (hero.png). -->
-  <script>if (location.search.includes('2x')) { document.querySelector('.stage').style.zoom = 2; }</script>
+  <!-- Render-Helfer: hero.html?render legt die Stage buendig nach links-oben (fuer Headless-Export).
+       Skalierung kommt ueber Edge --force-device-scale-factor (1x bzw. 2x), nicht ueber Zoom. -->
+  <script>
+    if (location.search.includes('render')) {
+      document.body.style.cssText = 'margin:0;padding:0;background:#080b10;display:block';
+      var h = document.querySelector('.hint'); if (h) h.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
