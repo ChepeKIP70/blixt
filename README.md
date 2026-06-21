@@ -1,5 +1,7 @@
 <div align="center">
 
+![Blixt — Windows speech-to-text with smart modes, cloud or fully offline](docs/hero.png)
+
 # Blixt
 
 **Press a hotkey, speak, and the text appears right where your cursor is.**
@@ -109,7 +111,7 @@ A thin Tauri 2 app (Rust core + WebView2 UI). Rust modules under `app/src-tauri/
 | Module | Responsibility |
 |--------|----------------|
 | `main.rs` | Tray, global hotkeys, orchestration |
-| `modes.rs` | The 7 modes (labels, hotkeys, system prompts, temperatures) |
+| `modes.rs` | The 8 modes (labels, hotkeys, system prompts, temperatures) |
 | `provider.rs` | Provider layer — OpenAI-compatible transcription + chat (Groq / OpenAI / local) |
 | `audio.rs` | Microphone capture (`cpal`) → WAV (`hound`) |
 | `paste.rs` | Auto-paste at the cursor (`enigo` + Win32 focus restore) |
@@ -119,7 +121,7 @@ The provider layer is the key idea: Groq, OpenAI and the local servers all speak
 
 ## Roadmap
 
-- ✅ 7 modes, auto-paste, cloud + offline
+- ✅ 8 modes, auto-paste, cloud + offline
 - ⏳ One-step offline setup (bundled local servers)
 - ⏳ User-configurable hotkeys & hold-to-talk mode
 - ⏳ Signed release builds + installer
@@ -230,7 +232,7 @@ Schlanke Tauri-2-App (Rust-Kern + WebView2-Oberfläche). Rust-Module unter `app/
 | Modul | Aufgabe |
 |-------|---------|
 | `main.rs` | Tray, globale Hotkeys, Ablaufsteuerung |
-| `modes.rs` | Die 7 Modi (Bezeichnung, Hotkey, System-Prompt, Temperatur) |
+| `modes.rs` | Die 8 Modi (Bezeichnung, Hotkey, System-Prompt, Temperatur) |
 | `provider.rs` | Anbieter-Schicht — OpenAI-kompatible Transkription + Chat (Groq / OpenAI / lokal) |
 | `audio.rs` | Mikrofon (`cpal`) → WAV (`hound`) |
 | `paste.rs` | Auto-Einfügen am Cursor (`enigo` + Win32-Fokus-Wiederherstellung) |
@@ -240,7 +242,7 @@ Kernidee ist die Anbieter-Schicht: Groq, OpenAI und die lokalen Server sprechen 
 
 ## Roadmap
 
-- ✅ 7 Modi, Auto-Einfügen, Cloud + offline
+- ✅ 8 Modi, Auto-Einfügen, Cloud + offline
 - ⏳ Ein-Schritt-Offline-Setup (gebündelte lokale Server)
 - ⏳ Frei konfigurierbare Hotkeys & Halten-zum-Sprechen
 - ⏳ Signierte Release-Builds + Installer
