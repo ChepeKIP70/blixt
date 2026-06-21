@@ -10,21 +10,23 @@
   <div class="settings-window">
     <div class="settings-title">Blixt &middot; Einstellungen</div>
 
-    <!-- Anbieter -->
+    <!-- Datenschutz & Routing (Erklaerung) -->
     <div class="section">
-      <div class="section-label">Anbieter</div>
-      <div class="field">
-        <select id="provider">
-          <option value="groq">Groq (Standard, kostenloses Kontingent)</option>
-          <option value="openai">OpenAI (eigener kostenpflichtiger Schl&uuml;ssel)</option>
-          <option value="local">Lokal &ndash; whisper.cpp (offline, kein Schl&uuml;ssel)</option>
-        </select>
+      <div class="section-label">Datenschutz &amp; Routing</div>
+      <div class="info-text">
+        Die <b>Transkription l&auml;uft immer lokal</b> &ndash; dein Audio verl&auml;sst den PC nie.<br />
+        Der <b>Text-Schritt</b> (Verbessern, Entsch&auml;rfen, Emoji, &Uuml;bersetzen, Prompt) nutzt
+        <b>Groq</b>, wenn ein Schl&uuml;ssel hinterlegt und du online bist &ndash; sonst lokal (Ollama).<br />
+        Beginnt dein Diktat mit dem Codewort <b>&bdquo;vertraulich&ldquo;</b>, bleibt auch der Text-Schritt
+        lokal (das Wort wird aus dem Ergebnis entfernt).
       </div>
     </div>
 
-    <!-- API Key -->
+    <hr class="divider" />
+
+    <!-- Groq API Key (nur fuer den Text-Schritt) -->
     <div class="section">
-      <div class="section-label">API-Schl&uuml;ssel <span id="providerName" class="muted"></span></div>
+      <div class="section-label">Groq API-Schl&uuml;ssel <span class="muted">(f&uuml;r den Cloud-Text-Schritt)</span></div>
 
       <div id="keyDisplayArea" style="display:none">
         <div class="key-display"><span class="lock">&#128274;</span> <span id="keyDisplayValue"></span></div>
@@ -36,12 +38,12 @@
       </div>
 
       <div id="keyInputArea">
-        <div class="field"><input type="password" id="apiKeyInput" placeholder="Schl&uuml;ssel einf&uuml;gen" autocomplete="off" /></div>
+        <div class="field"><input type="password" id="apiKeyInput" placeholder="Groq-Schl&uuml;ssel einf&uuml;gen" autocomplete="off" /></div>
         <div class="btn-row" style="margin-top:8px">
           <button class="btn primary" id="saveKeyBtn">Speichern</button>
           <button class="btn" id="pasteKeyBtn">Aus Zwischenablage</button>
         </div>
-        <div class="info-text" id="keyHint">Bleibt lokal im Windows Credential Manager.</div>
+        <div class="info-text" id="keyHint">Kostenloser Schl&uuml;ssel: console.groq.com/keys &middot; bleibt lokal im Windows Credential Manager. Leer lassen = alles l&auml;uft lokal.</div>
       </div>
 
       <div id="keyMsg" class="msg" style="display:none"></div>
@@ -53,34 +55,20 @@
     <div class="section">
       <div class="section-label">Modelle</div>
       <div class="field">
-        <label>Transkription</label>
-        <input type="text" id="transcriptionModel" placeholder="whisper-large-v3-turbo" />
-      </div>
-      <div class="field">
-        <label>Cloud-Textmodell (Verbessern / Entsch&auml;rfen / Emoji / &Uuml;bersetzen / Prompt)</label>
+        <label>Groq-Textmodell <span class="muted">(online)</span></label>
         <input type="text" id="chatModel" placeholder="llama-3.3-70b-versatile" />
       </div>
-      <div class="info-text">Groq: <code>whisper-large-v3-turbo</code> + <code>llama-3.3-70b-versatile</code> &middot; OpenAI: <code>whisper-1</code> + <code>gpt-4o-mini</code></div>
-
-      <div class="field" style="margin-top:10px">
-        <label>Textmodell-Anbieter</label>
-        <select id="chatProvider">
-          <option value="groq">Groq (Cloud)</option>
-          <option value="openai">OpenAI (Cloud)</option>
-          <option value="local">Lokal &ndash; Ollama (offline, kein Schl&uuml;ssel)</option>
-        </select>
-      </div>
       <div class="field">
-        <label>Lokales Modell (Ollama)</label>
+        <label>Lokales Modell &ndash; Ollama <span class="muted">(offline / bei &bdquo;vertraulich&ldquo;)</span></label>
         <input type="text" id="localChatModel" placeholder="qwen2.5:7b" />
       </div>
-      <div class="info-text">&bdquo;Lokal&ldquo; schickt die Transform-Modi an deinen Ollama-Server (localhost:11434) &mdash; ohne Cloud/Schl&uuml;ssel.</div>
+      <div class="info-text">Ollama l&auml;uft unter <code>127.0.0.1:11434</code> &mdash; ohne Cloud/Schl&uuml;ssel.</div>
 
       <div class="field" style="margin-top:10px">
-        <label>Lokaler Whisper-Server (Transkriptions-Anbieter &bdquo;Lokal&ldquo;)</label>
+        <label>Lokaler Whisper-Server <span class="muted">(Transkription, immer lokal)</span></label>
         <input type="text" id="localSttUrl" placeholder="http://127.0.0.1:8765/v1" />
       </div>
-      <div class="info-text">F&uuml;r <b>voll offline</b>: oben den <b>Anbieter</b> auf &bdquo;Lokal&ldquo; stellen. Braucht den laufenden whisper.cpp-Server unter dieser URL.</div>
+      <div class="info-text">Braucht den laufenden whisper.cpp-Server unter dieser URL.</div>
     </div>
 
     <hr class="divider" />
@@ -117,7 +105,7 @@
         <span>Ctrl+Shift+7</span><span>Prompt (EN)</span>
         <span>Ctrl+Shift+8</span><span>Prompt (DE)</span>
       </div>
-      <div class="info-text">Toggle-Modus: einmal dr&uuml;cken = Aufnahme, nochmal = fertig.</div>
+      <div class="info-text">Toggle-Modus: einmal dr&uuml;cken = Aufnahme, nochmal = fertig. Tipp: &bdquo;vertraulich&ldquo; als erstes Wort h&auml;lt alles lokal.</div>
     </div>
 
     <div class="btn-row"><button class="btn primary" id="saveSettingsBtn">Einstellungen speichern</button></div>

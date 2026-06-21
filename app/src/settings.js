@@ -2,8 +2,9 @@ const { invoke } = window.__TAURI__.core;
 
 const el = (id) => document.getElementById(id);
 
-const provider          = el('provider');
-const providerName      = el('providerName');
+// Cloud-Anbieter fuer den Text-Schritt ist fest Groq (das Routing nutzt nur Groq).
+const CHAT_CLOUD_PROVIDER = 'groq';
+
 const keyDisplayArea    = el('keyDisplayArea');
 const keyDisplayValue   = el('keyDisplayValue');
 const keyInputArea      = el('keyInputArea');
@@ -15,9 +16,7 @@ const deleteKeyBtn      = el('deleteKeyBtn');
 const testBtn           = el('testBtn');
 const keyMsg            = el('keyMsg');
 
-const transcriptionModel = el('transcriptionModel');
 const chatModel          = el('chatModel');
-const chatProvider       = el('chatProvider');
 const localChatModel     = el('localChatModel');
 const localSttUrl        = el('localSttUrl');
 const language           = el('language');
@@ -25,7 +24,9 @@ const autoPasteEnabled   = el('autoPasteEnabled');
 const saveSettingsBtn    = el('saveSettingsBtn');
 const settingsMsg        = el('settingsMsg');
 
-const PROVIDER_LABEL = { groq: 'Groq', openai: 'OpenAI', local: 'Lokal' };
+// Felder, die die UI nicht mehr anzeigt, aber die Settings-Struktur weiter erwartet.
+// Beim Speichern unveraendert zuruecksenden (Transkription ist ohnehin immer lokal).
+let keptTranscriptionModel = 'whisper-large-v3-turbo';
 
 function flash(node, text, type) {
   node.textContent = text;
@@ -35,16 +36,9 @@ function flash(node, text, type) {
 }
 
 async function refreshKeyArea() {
-  const p = provider.value;
-  providerName.textContent = '(' + (PROVIDER_LABEL[p] || p) + ')';
-  if (p === 'local') {
-    keyDisplayArea.style.display = 'none';
-    keyInputArea.style.display = 'none';
-    return;
-  }
-  const hasKey = await invoke('has_api_key', { provider: p });
+  const hasKey = await invoke('has_api_key', { provider: CHAT_CLOUD_PROVIDER });
   if (hasKey) {
-    keyDisplayValue.textContent = await invoke('api_key_display', { provider: p });
+    keyDisplayValue.textContent = await invoke('api_key_display', { provider: CHAT_CLOUD_PROVIDER });
     keyDisplayArea.style.display = 'block';
     keyInputArea.style.display = 'none';
   } else {
@@ -56,10 +50,8 @@ async function refreshKeyArea() {
 
 async function loadSettings() {
   const s = await invoke('get_settings');
-  provider.value          = s.provider || 'groq';
-  transcriptionModel.value = s.transcriptionModel || '';
+  keptTranscriptionModel   = s.transcriptionModel || 'whisper-large-v3-turbo';
   chatModel.value          = s.chatModel || '';
-  chatProvider.value       = s.chatProvider || 'groq';
   localChatModel.value     = s.localChatModel || 'qwen2.5:7b';
   localSttUrl.value        = s.localSttUrl || 'http://127.0.0.1:8765/v1';
   language.value           = s.language ?? 'de';
@@ -69,13 +61,11 @@ async function loadSettings() {
 
 (async () => { await loadSettings(); })();
 
-provider.addEventListener('change', refreshKeyArea);
-
 saveKeyBtn.addEventListener('click', async () => {
   const key = apiKeyInput.value.trim();
   if (!key) { flash(keyMsg, 'Bitte einen Schlüssel eingeben.', 'error'); return; }
   try {
-    await invoke('save_api_key', { provider: provider.value, key });
+    await invoke('save_api_key', { provider: CHAT_CLOUD_PROVIDER, key });
     apiKeyInput.value = '';
     await refreshKeyArea();
     flash(keyMsg, 'Schlüssel gespeichert.', 'success');
@@ -99,7 +89,7 @@ changeKeyBtn.addEventListener('click', () => {
 deleteKeyBtn.addEventListener('click', async () => {
   if (!confirm('Schlüssel wirklich löschen?')) return;
   try {
-    await invoke('delete_api_key', { provider: provider.value });
+    await invoke('delete_api_key', { provider: CHAT_CLOUD_PROVIDER });
     await refreshKeyArea();
     flash(keyMsg, 'Schlüssel gelöscht.', 'success');
   } catch (e) { flash(keyMsg, String(e), 'error'); }
@@ -119,10 +109,12 @@ saveSettingsBtn.addEventListener('click', async () => {
   try {
     await invoke('save_settings', {
       s: {
-        provider: provider.value,
-        transcriptionModel: transcriptionModel.value.trim() || 'whisper-large-v3-turbo',
+        // Transkription ist immer lokal -> provider fest "local".
+        provider: 'local',
+        transcriptionModel: keptTranscriptionModel,
         chatModel: chatModel.value.trim() || 'llama-3.3-70b-versatile',
-        chatProvider: chatProvider.value,
+        // Routing entscheidet Groq vs. lokal; chatProvider bleibt aus Kompatibilitaet "groq".
+        chatProvider: 'groq',
         localChatModel: localChatModel.value.trim() || 'qwen2.5:7b',
         localSttUrl: localSttUrl.value.trim() || 'http://127.0.0.1:8765/v1',
         language: language.value,

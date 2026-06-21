@@ -16,6 +16,9 @@ pub enum Provider {
 }
 
 impl Provider {
+    // Aktuell ungenutzt: Transkription ist immer lokal, der Cloud-Text-Schritt fest Groq.
+    // Bleibt vorgehalten, falls die Anbieterwahl wieder ueber die Einstellung laufen soll.
+    #[allow(dead_code)]
     pub fn from_id(s: &str) -> Provider {
         match s {
             "openai" => Provider::OpenAi,

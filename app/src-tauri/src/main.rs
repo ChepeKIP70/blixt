@@ -69,11 +69,10 @@ fn api_key_display(provider: String) -> String {
 
 #[tauri::command]
 async fn test_connection(app: AppHandle) -> Result<(), String> {
+    // Der Cloud-Text-Schritt nutzt Groq -> hier den Groq-Schluessel gegen Groq testen.
     let s = settings::load(&app);
-    let api_key = settings::get_api_key(&s.provider)?;
-    Provider::from_id(&s.provider)
-        .test_connection(&api_key, &s.chat_model)
-        .await
+    let api_key = settings::get_api_key("groq")?;
+    Provider::Groq.test_connection(&api_key, &s.chat_model).await
 }
 
 // ── Kernlogik ─────────────────────────────────────────────────────────────────
