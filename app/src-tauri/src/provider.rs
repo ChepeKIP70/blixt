@@ -34,6 +34,9 @@ impl Provider {
         }
     }
 
+    // Cloud-Transkription. Aktuell ungenutzt: Blixt transkribiert aus Datenschutzgründen IMMER
+    // lokal (das Audio verlässt nie den PC). Methode bleibt für eine spätere optionale Cloud-STT.
+    #[allow(dead_code)]
     pub async fn transcribe(
         &self,
         audio: &Path,
@@ -99,6 +102,25 @@ pub async fn transcribe_local(
     transcribe_openai_compatible(base_url, audio, "", model, language).await
 }
 
+// Bei einem Sende-/Verbindungsfehler unterscheiden, ob ein LOKALER Server (Whisper/Ollama)
+// schlicht nicht laeuft - dann eine klare Handlungsanweisung statt des kryptischen reqwest-Texts.
+fn network_error(label: &str, base_url: &str, e: &reqwest::Error) -> String {
+    let is_local = base_url.contains("127.0.0.1") || base_url.contains("localhost");
+    if is_local && (e.is_connect() || e.is_timeout()) {
+        if base_url.contains("11434") {
+            return "Lokales Textmodell nicht erreichbar: Ollama laeuft nicht. \
+                    Bitte Ollama starten - oder in den Einstellungen auf einen Online-Anbieter \
+                    (Groq/OpenAI) wechseln."
+                .to_string();
+        }
+        return "Lokaler Whisper-Server nicht erreichbar (Port 8765 antwortet nicht). \
+                Bitte den whisper.cpp-Server starten (siehe docs/OFFLINE-SETUP.md) - oder in den \
+                Einstellungen auf einen Online-Anbieter (Groq/OpenAI) wechseln."
+            .to_string();
+    }
+    format!("{}: Netzwerkfehler - {}", label, e)
+}
+
 fn api_error(label: &str, status: u16, body: &str) -> String {
     match status {
         401 => format!("{}: API-Schluessel ungueltig. Bitte pruefen.", label),
@@ -152,7 +174,7 @@ async fn transcribe_openai_compatible(
         .multipart(form)
         .send()
         .await
-        .map_err(|e| format!("Netzwerkfehler: {}", e))?;
+        .map_err(|e| network_error("Transkription", base_url, &e))?;
 
     let status = response.status().as_u16();
     let body = response.text().await.unwrap_or_default();
@@ -195,7 +217,7 @@ async fn chat_openai_compatible(
         .json(&body)
         .send()
         .await
-        .map_err(|e| format!("Netzwerkfehler: {}", e))?;
+        .map_err(|e| network_error("Textmodell", base_url, &e))?;
 
     let status = response.status().as_u16();
     let body_text = response.text().await.unwrap_or_default();

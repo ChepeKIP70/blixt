@@ -95,20 +95,7 @@ async fn do_toggle(app: &AppHandle, mode: Mode) -> Result<(), String> {
 }
 
 fn do_start(app: &AppHandle, mode: Mode) -> Result<(), String> {
-    let s = settings::load(app);
-    if s.provider != "local" && !settings::has_api_key(&s.provider) {
-        app.emit(
-            "show-error",
-            format!(
-                "Kein API-Schluessel fuer {}. Bitte in den Einstellungen eintragen.",
-                s.provider
-            ),
-        )
-        .ok();
-        open_settings_window(app);
-        return Ok(());
-    }
-
+    // Transkription läuft immer lokal -> kein Schlüssel-Check nötig, um die Aufnahme zu starten.
     let target_hwnd = paste::capture_foreground_window();
 
     let recorder = audio::Recorder::new()?;
@@ -131,6 +118,38 @@ fn do_start(app: &AppHandle, mode: Mode) -> Result<(), String> {
     )
     .ok();
     Ok(())
+}
+
+/// Führt den Textmodell-Schritt gemäß Codewort-Routing aus: Groq (falls `use_groq`), sonst lokal.
+/// Schlägt Groq fehl (offline, Schlüssel ungültig), fällt es automatisch auf das lokale Modell
+/// zurück -> kein Abbruch, das Ergebnis kommt trotzdem.
+async fn chat_routed(
+    use_groq: bool,
+    groq_model: &str,
+    groq_key: &str,
+    local_model: &str,
+    system: &str,
+    input: &str,
+    temperature: f64,
+) -> Result<String, String> {
+    if use_groq {
+        match Provider::Groq
+            .chat(system, input, groq_key, groq_model, temperature)
+            .await
+        {
+            Ok(t) => Ok(t),
+            // Rückfall auf lokal: Netz weg oder Groq-Fehler -> trotzdem ein Ergebnis liefern.
+            Err(_) => {
+                Provider::Local
+                    .chat(system, input, "", local_model, temperature)
+                    .await
+            }
+        }
+    } else {
+        Provider::Local
+            .chat(system, input, "", local_model, temperature)
+            .await
+    }
 }
 
 async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
@@ -159,7 +178,6 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
 
     let wav_path = recorder.stop_and_save()?;
     let s = settings::load(app);
-    let provider = Provider::from_id(&s.provider);
 
     app.emit("status-update", "Wird transkribiert ...").ok();
     // Transkriptions-Sprache: der EN->DE-Modus erwartet ENGLISCHE Sprache -> sonst verhoert sich
@@ -169,22 +187,11 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
     } else {
         s.language.as_str()
     };
-    // Lokale Transkription läuft über den whisper.cpp-Server (kein Schlüssel);
-    // Cloud-Anbieter brauchen einen Schlüssel.
-    let transcribe_result = if provider == Provider::Local {
-        // "localhost" -> "127.0.0.1": feste IPv4-Loopback, funktioniert auch offline/mit VPN.
-        let stt_url = s.local_stt_url.replace("localhost", "127.0.0.1");
-        provider::transcribe_local(&stt_url, &wav_path, &s.transcription_model, Some(stt_lang)).await
-    } else {
-        match settings::get_api_key(&s.provider) {
-            Ok(api_key) => {
-                provider
-                    .transcribe(&wav_path, &api_key, &s.transcription_model, Some(stt_lang))
-                    .await
-            }
-            Err(e) => Err(e),
-        }
-    };
+    // Datenschutz: Transkription läuft IMMER lokal (whisper.cpp) -> das Audio verlässt nie den PC.
+    // "localhost" -> "127.0.0.1": feste IPv4-Loopback, funktioniert auch offline/mit VPN.
+    let stt_url = s.local_stt_url.replace("localhost", "127.0.0.1");
+    let transcribe_result =
+        provider::transcribe_local(&stt_url, &wav_path, &s.transcription_model, Some(stt_lang)).await;
     let text = match transcribe_result {
         Ok(t) => {
             let _ = std::fs::remove_file(&wav_path);
@@ -205,47 +212,53 @@ async fn do_stop_and_process(app: &AppHandle) -> Result<(), String> {
     // Modi ausser Diktat: zweite Phase durch das Textmodell. Schlaegt sie fehl,
     // liefern wir den reinen Transkript-Text als Rueckfall.
     let final_text = if mode.needs_chat() {
-        // Textmodell-Anbieter getrennt von der Transkription. "local" = Ollama (kein Schluessel).
-        let chat_provider = Provider::from_id(&s.chat_provider);
-        let chat_model = if chat_provider == Provider::Local {
-            s.local_chat_model.as_str()
+        // Codewort-Routing: "vertraulich" am Anfang -> Textmodell bleibt lokal (Ollama).
+        // Sonst Groq, falls ein Schlüssel hinterlegt ist; bei Netz-/Groq-Fehler Rückfall auf lokal.
+        let (clean_text, force_local) = modes::strip_privacy_codeword(&text);
+        let use_groq = !force_local && settings::has_api_key("groq");
+        let groq_key = if use_groq {
+            settings::get_api_key("groq").unwrap_or_default()
         } else {
-            s.chat_model.as_str()
-        };
-        let chat_key = if chat_provider == Provider::Local {
             String::new()
-        } else {
-            match settings::get_api_key(&s.chat_provider) {
-                Ok(k) => k,
-                Err(e) => {
-                    app.emit("show-error", &e).ok();
-                    String::new()
-                }
-            }
         };
-        app.emit("status-update", mode.processing_label()).ok();
-        let first = match chat_provider
-            .chat(mode.system_prompt(), &text, &chat_key, chat_model, mode.temperature())
-            .await
+        let route = if use_groq { "☁ Groq" } else { "🔒 Lokal" };
+        app.emit("status-update", format!("{} · {}", route, mode.processing_label()))
+            .ok();
+
+        let first = match chat_routed(
+            use_groq,
+            &s.chat_model,
+            &groq_key,
+            &s.local_chat_model,
+            mode.system_prompt(),
+            &clean_text,
+            mode.temperature(),
+        )
+        .await
         {
             Ok(t) => t,
             Err(e) => {
                 app.emit("show-error", &e).ok();
-                text
+                clean_text.clone()
             }
         };
-        // Entschaerfen: zweiter Pass glaettet die Sprache. Kleine lokale Modelle erzeugen beim
-        // Umschreiben Grammatikfehler/Fremdwort-Einsprengsel; ein Lektor-Pass buegelt das aus.
-        // Schlaegt er fehl, behalten wir die erste (entschaerfte) Fassung.
+        // Entschaerfen: zweiter Pass glaettet die Sprache (gleiche Routing-Entscheidung).
+        // Kleine lokale Modelle erzeugen beim Umschreiben Grammatikfehler; ein Lektor-Pass buegelt
+        // das aus. Schlaegt er fehl, behalten wir die erste (entschaerfte) Fassung.
         if mode == Mode::Vent {
-            app.emit("status-update", "Wird sprachlich geglättet ...").ok();
-            match chat_provider
-                .chat(modes::VENT_POLISH_PROMPT, &first, &chat_key, chat_model, 0.2)
-                .await
-            {
-                Ok(t) => t,
-                Err(_) => first,
-            }
+            app.emit("status-update", format!("{} · Wird sprachlich geglättet ...", route))
+                .ok();
+            chat_routed(
+                use_groq,
+                &s.chat_model,
+                &groq_key,
+                &s.local_chat_model,
+                modes::VENT_POLISH_PROMPT,
+                &first,
+                0.2,
+            )
+            .await
+            .unwrap_or(first)
         } else {
             first
         }

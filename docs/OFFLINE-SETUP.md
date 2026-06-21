@@ -71,15 +71,18 @@ Leave this window open. The server now answers at `http://127.0.0.1:8765/v1/audi
 
 ## 3. Point Blixt at the local servers
 
+**Transcription is always local** in Blixt — so the whisper.cpp server above is required either way. The **text model** for the smart modes can run locally (Ollama) or on Groq.
+
 In Blixt → tray → **Settings**:
 
-- **Provider** (transcription) → **Local**
 - **Local Whisper server** → `http://127.0.0.1:8765/v1`
-- **Text-model provider** → **Local (Ollama)**
-- **Local model** → `qwen2.5:7b`
+- **Local model** (Ollama) → `qwen2.5:7b`
 - **Save settings**
 
-Now use any mode (`Ctrl+Shift+1` … `7`). Both transcription and the text model run locally. You can pull the network cable / disable Wi-Fi and it keeps working.
+Now use any mode (`Ctrl+Shift+1` … `8`):
+
+- **Fully offline:** with no Groq key set (or no internet), every step runs locally. You can pull the network cable / disable Wi-Fi and it keeps working.
+- **Hybrid (default once a Groq key is set and you're online):** transcription stays local, the smart text step runs on Groq for speed/quality. Prefix your dictation with the codeword **`vertraulich`** to force that step local too — the codeword is stripped from the result.
 
 > **Important:** always use `127.0.0.1`, **not** `localhost`. `localhost` can resolve to IPv6 (`::1`) and fail when offline or behind a VPN; the literal IPv4 loopback always works.
 

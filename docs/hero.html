@@ -73,6 +73,8 @@
   .winpill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#cfd6df;
     background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
   .winpill svg{width:14px;height:14px;color:#5aa9ff}
+  .ver{font-family:'Sora';font-size:15px;font-weight:600;color:#ffcf9c;background:rgba(255,122,24,.14);
+    border:1px solid rgba(255,122,24,.32);border-radius:999px;padding:5px 13px;align-self:center}
 
   /* ---------- modes strip ---------- */
   .modes-h{display:flex;align-items:baseline;gap:12px;margin-top:26px;margin-bottom:13px}
@@ -122,9 +124,10 @@
               </svg>
             </div>
             <div><div class="wordmark">Blixt</div></div>
+            <span class="ver">v0.2</span>
           </div>
           <div class="sub">Lokaler KI-Sprachassistent für <span class="accent">Windows</span></div>
-          <div class="tagline">Sprich. Text. Fertig — <span class="off">komplett offline.</span></div>
+          <div class="tagline">Sprich. Text. Fertig — <span class="off">dein Audio bleibt lokal.</span></div>
           <div class="verbs">
             <span class="v">Aufnehmen</span><span class="dot"></span>
             <span class="v">Transkribieren</span><span class="dot"></span>
@@ -205,14 +208,16 @@
           <div class="st"><span class="d" style="background:var(--grey);color:var(--grey)"></span>Leerlauf</div>
         </div>
         <div class="feats">
-          <span class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>Daten bleiben lokal</span>
+          <span class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>Audio bleibt lokal</span>
+          <span class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Codewort »vertraulich«</span>
           <span class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 8-8M20 12a8 8 0 0 1-8 8"/><path d="M12 8v4l3 2"/></svg>Lokal &amp; Cloud</span>
-          <span class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h9l5 5v11H5z"/><path d="M9 13h6M9 16h6"/></svg>DOCX-Export</span>
           <span class="feat">Open Source · MIT</span>
         </div>
       </div>
 
     </div>
   </div>
+  <!-- Render-Helfer: hero.html?2x zoomt die Stage fuer den 2560x1280-Export (hero.png). -->
+  <script>if (location.search.includes('2x')) { document.querySelector('.stage').style.zoom = 2; }</script>
 </body>
 </html>

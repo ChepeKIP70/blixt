@@ -1,6 +1,6 @@
 [package]
 name = "blixt"
-version = "0.1.0"
+version = "0.2.0"
 description = "Blixt - Sprache zu Text fuer Windows"
 authors = ["Blixt"]
 edition = "2021"

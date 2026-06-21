@@ -5,9 +5,10 @@
 # Blixt
 
 **Press a hotkey, speak, and the text appears right where your cursor is.**
-Windows speech-to-text with smart modes — cloud or fully offline.
+Windows speech-to-text with smart modes — your audio stays local, the smart step runs in the cloud or fully offline.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-0.2-orange.svg)
 ![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)
 ![Built with Tauri](https://img.shields.io/badge/Built%20with-Tauri%202-24C8DB.svg)
 
@@ -27,6 +28,7 @@ Windows speech-to-text with smart modes — cloud or fully offline.
 
 - [What is Blixt?](#what-is-blixt)
 - [Features](#features)
+- [Privacy & smart routing](#privacy--smart-routing)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Offline mode](#offline-mode)
@@ -44,7 +46,7 @@ Windows speech-to-text with smart modes — cloud or fully offline.
 
 Blixt is a small Windows system-tray app for **speech-to-text**: press a hotkey, speak, release — the text is inserted at your cursor automatically. Beyond plain dictation, it offers several **smart modes** (clean-up, calmer rewriting, emojis, translation, prompt-building).
 
-It runs against **swappable providers**: in the cloud (Groq by default, or OpenAI), or **fully offline** on your own machine (whisper.cpp for transcription + Ollama for the text model) — no API key, no internet, your voice never leaves the PC.
+**Your voice never leaves the PC:** transcription always runs **locally** (whisper.cpp). The optional smart-mode step then runs on **Groq** (cloud, fast, high quality) by default — or stays **local** (Ollama) when you're offline or when you prefix your dictation with the codeword **`vertraulich`** (German for "confidential"). Blixt can also run **fully offline** end to end.
 
 Blixt is an independent **Windows** take, derived from the macOS app [blitztext-app](https://github.com/cmagnussen/blitztext-app) (see [Credits](#credits)).
 
@@ -63,6 +65,19 @@ Blixt is an independent **Windows** take, derived from the macOS app [blitztext-
 
 Toggle recording: press once to start, press again to finish. The result lands on the clipboard and is auto-pasted at the cursor.
 
+The **Prompt** modes produce a 7-field prompt (Role · Objective · Context · Task · Constraints · Output format · Recap), following current prompt-engineering guidance from Anthropic, OpenAI and Google.
+
+## Privacy & smart routing
+
+Blixt is **private by default for your audio**:
+
+- **Transcription always runs locally** (whisper.cpp) — the audio never leaves your PC.
+- The **smart-mode text step** (Improve, Vent, Emoji, Translate, Prompt) goes to **Groq** by default — *if* you're online and a Groq API key is set — for speed and better quality.
+- Prefix your dictation with the codeword **`vertraulich`** to force that step **local** too (Ollama). The codeword is stripped from the result.
+- No internet or no key? Blixt **falls back to local automatically** — no error, no interruption.
+
+The status window shows which route was used: **☁ Groq** or **🔒 Local**.
+
 ## Quick Start
 
 **Prerequisites:** [Rust](https://rustup.rs) (MSVC toolchain), [Node.js](https://nodejs.org), and WebView2 (pre-installed on Windows 11).
@@ -80,29 +95,32 @@ The binary is created at `app/src-tauri/target/release/blixt.exe`.
 
 Launch `blixt.exe`. **No window opens — Blixt lives in the system tray** (the orange microphone icon, bottom-right; it may be hidden behind the `^` arrow). Left-click it for the status window, right-click for Settings / Quit.
 
-**Fastest way to try it (cloud, ~2 min):**
+### Setup
 
-1. Tray icon → **Settings** → **Provider: Groq**.
-2. Grab a free API key at [console.groq.com/keys](https://console.groq.com/keys), paste it, and click **Test connection**.
-3. Click into any text field, press **`Ctrl+Shift+1`**, speak, then press it again — your text appears at the cursor.
+Blixt always transcribes **locally**, so the local whisper server needs to be running (one-time setup, ~15 min): **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
 
-No API key wanted? Run it fully offline instead → see [Offline mode](#offline-mode).
+For the **smart modes** (everything beyond plain dictation) pick one:
+
+- **Fastest / best quality:** grab a free [Groq](https://console.groq.com/keys) API key, paste it in tray → **Settings**. The text step then runs on Groq whenever you're online.
+- **Fully offline:** run [Ollama](https://ollama.com) with a local model (e.g. `qwen2.5:7b`) — no key, no internet.
+
+Then click into any text field, press **`Ctrl+Shift+1`**, speak, and press it again — your text appears at the cursor. Prefix **`vertraulich`** anytime to keep everything local.
 
 ## Configuration
 
-Open the tray icon → **Settings**. Transcription and the text model are chosen **independently**:
+Open the tray icon → **Settings**. API keys are stored in the **Windows Credential Manager**, never in the code.
 
-- **Cloud (default):** pick Groq (free tier) or OpenAI and paste your own API key. The key is stored in the **Windows Credential Manager**, never in the code.
-- **Offline:** set both providers to *Local* — see below.
+- **Transcription:** always local via the whisper.cpp server. Set its URL (default `http://127.0.0.1:8765/v1`).
+- **Smart-mode text model:** runs on **Groq** when you're online and a key is set; otherwise it falls back to local **Ollama**. The codeword `vertraulich` always forces local.
 
 ## Offline mode
 
 Blixt can run **completely offline** using local servers:
 
-- **Transcription** → a local [whisper.cpp](https://github.com/ggml-org/whisper.cpp) server (GPU via CUDA/Vulkan, or CPU)
-- **Text model** → [Ollama](https://ollama.com) running a local model (e.g. `qwen2.5:7b`)
+- **Transcription** → a local [whisper.cpp](https://github.com/ggml-org/whisper.cpp) server (GPU via CUDA/Vulkan, or CPU) — this is always used
+- **Text model** → [Ollama](https://ollama.com) running a local model (e.g. `qwen2.5:7b`) — used when offline, without a Groq key, or via the `vertraulich` codeword
 
-This is **not turnkey** — you install and run those two local servers yourself. Step-by-step instructions: **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
+This is **not turnkey** — you install and run those local servers yourself. Step-by-step instructions: **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
 
 ## Architecture
 
@@ -110,8 +128,8 @@ A thin Tauri 2 app (Rust core + WebView2 UI). Rust modules under `app/src-tauri/
 
 | Module | Responsibility |
 |--------|----------------|
-| `main.rs` | Tray, global hotkeys, orchestration |
-| `modes.rs` | The 8 modes (labels, hotkeys, system prompts, temperatures) |
+| `main.rs` | Tray, global hotkeys, orchestration, privacy routing |
+| `modes.rs` | The 8 modes (labels, hotkeys, system prompts, temperatures), codeword detection |
 | `provider.rs` | Provider layer — OpenAI-compatible transcription + chat (Groq / OpenAI / local) |
 | `audio.rs` | Microphone capture (`cpal`) → WAV (`hound`) |
 | `paste.rs` | Auto-paste at the cursor (`enigo` + Win32 focus restore) |
@@ -121,21 +139,24 @@ The provider layer is the key idea: Groq, OpenAI and the local servers all speak
 
 ## Roadmap
 
-- ✅ 8 modes, auto-paste, cloud + offline
+- ✅ 8 modes, auto-paste, local transcription + cloud/offline smart step
+- ✅ Privacy routing (`vertraulich` codeword, audio always local)
 - ⏳ One-step offline setup (bundled local servers)
-- ⏳ User-configurable hotkeys & hold-to-talk mode
+- ⏳ User-configurable hotkeys, codeword & hold-to-talk mode
 - ⏳ Signed release builds + installer
 - ⏳ More target languages for translate
 
 ## Built with an AI agent
 
-Blixt was built in a single focused session by someone who is **not a Rust developer**, working with an AI coding agent — from analysing the original macOS app, to a working, offline-capable native Windows port. It is an honest demonstration of how far AI-assisted development can take a real native application. The code is human-reviewed and runs; it is intentionally small and hackable, not a polished commercial product.
+Blixt was built by someone who is **not a Rust developer**, working with an AI coding agent — from analysing the original macOS app, to a working, offline-capable native Windows port. It is an honest demonstration of how far AI-assisted development can take a real native application. The code is human-reviewed and runs; it is intentionally small and hackable, not a polished commercial product.
 
 ## Credits
 
 Based on [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) by **cmagnussen** (MIT License). Blixt is an independent re-implementation for Windows (Tauri/Rust), not a code fork — with its **own name, icon and branding** as required by the original project's trademark notice.
 
-**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, a fully offline mode, and extra modes (Translate DE→EN and EN→DE, Prompt EN/DE).
+The system-tray microphone glyph is from [**Material Design Icons**](https://pictogrammers.com/library/mdi/) (Apache License 2.0), recoloured in the Blixt orange.
+
+**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, always-local transcription with codeword privacy routing, a fully offline mode, and extra modes (Translate DE→EN and EN→DE, Prompt EN/DE).
 
 ## Contributing
 
@@ -157,7 +178,7 @@ Small, hackable, PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 # Blixt (Deutsch)
 
 **Taste drücken, sprechen — der Text erscheint direkt am Cursor.**
-Windows-Sprache-zu-Text mit cleveren Modi — Cloud oder komplett offline.
+Windows-Sprache-zu-Text mit cleveren Modi — dein Audio bleibt lokal, der clevere Schritt läuft in der Cloud oder komplett offline.
 
 </div>
 
@@ -165,7 +186,7 @@ Windows-Sprache-zu-Text mit cleveren Modi — Cloud oder komplett offline.
 
 Blixt ist eine kleine Windows-App (im System-Tray, also dem Symbolbereich unten rechts) für **Sprache-zu-Text**: Taste drücken, sprechen, loslassen — der Text wird automatisch am Cursor eingefügt. Neben reinem Diktat gibt es mehrere **clevere Modi** (Aufpolieren, Entschärfen, Emojis, Übersetzen, Prompt-Bauen).
 
-Es nutzt **austauschbare Anbieter**: in der Cloud (Groq als Standard, oder OpenAI) oder **komplett offline** auf deinem eigenen Rechner (whisper.cpp für die Transkription + Ollama für das Textmodell) — kein Schlüssel, kein Internet, deine Stimme verlässt den PC nie.
+**Deine Stimme verlässt den PC nie:** Die Transkription läuft immer **lokal** (whisper.cpp). Der optionale clevere Schritt läuft standardmäßig über **Groq** (Cloud, schnell, hohe Qualität) — oder bleibt **lokal** (Ollama), wenn du offline bist oder dem Diktat das Codewort **`vertraulich`** voranstellst. Blixt läuft auf Wunsch auch **komplett offline**.
 
 Blixt ist eine eigenständige **Windows**-Variante, abgeleitet aus der macOS-App [blitztext-app](https://github.com/cmagnussen/blitztext-app) (siehe [Credits](#credits-1)).
 
@@ -184,6 +205,19 @@ Blixt ist eine eigenständige **Windows**-Variante, abgeleitet aus der macOS-App
 
 Toggle-Aufnahme: einmal drücken = Start, nochmal drücken = fertig. Das Ergebnis landet in der Zwischenablage und wird am Cursor eingefügt.
 
+Die **Prompt**-Modi erzeugen einen 7-Felder-Prompt (Rolle · Ziel · Kontext · Aufgabe · Randbedingungen · Ausgabeformat · Kurzfassung), nach aktuellen Prompt-Engineering-Empfehlungen von Anthropic, OpenAI und Google.
+
+## Datenschutz & cleveres Routing
+
+Blixt ist **für dein Audio standardmäßig privat**:
+
+- **Die Transkription läuft immer lokal** (whisper.cpp) — das Audio verlässt den PC nie.
+- Der **clevere Text-Schritt** (Verbessern, Entschärfen, Emoji, Übersetzen, Prompt) geht standardmäßig an **Groq** — *sofern* du online bist und ein Groq-API-Schlüssel hinterlegt ist — für Tempo und bessere Qualität.
+- Stell dem Diktat das Codewort **`vertraulich`** voran, dann bleibt auch dieser Schritt **lokal** (Ollama). Das Codewort wird aus dem Ergebnis entfernt.
+- Kein Internet oder kein Schlüssel? Blixt **fällt automatisch auf lokal zurück** — kein Fehler, kein Abbruch.
+
+Das Statusfenster zeigt den genutzten Weg: **☁ Groq** oder **🔒 Lokal**.
+
 ## Schnellstart
 
 **Voraussetzungen:** [Rust](https://rustup.rs) (MSVC-Toolchain), [Node.js](https://nodejs.org), WebView2 (auf Windows 11 vorinstalliert).
@@ -201,29 +235,32 @@ Ergebnis: `app/src-tauri/target/release/blixt.exe`.
 
 `blixt.exe` starten. **Es öffnet sich kein Fenster — Blixt lebt im System-Tray** (oranges Mikrofon-Symbol unten rechts, evtl. hinter dem `^`-Pfeil versteckt). Linksklick zeigt das Statusfenster, Rechtsklick öffnet Einstellungen / Beenden.
 
-**Schnellster Test (Cloud, ~2 Min):**
+### Einrichtung
 
-1. Tray-Symbol → **Einstellungen** → **Anbieter: Groq**.
-2. Kostenlosen API-Schlüssel auf [console.groq.com/keys](https://console.groq.com/keys) holen, einfügen, **Verbindung testen**.
-3. In ein beliebiges Textfeld klicken, **`Strg+Umschalt+1`** drücken, sprechen, nochmal drücken — der Text erscheint am Cursor.
+Blixt transkribiert immer **lokal**, daher muss der lokale whisper-Server laufen (einmalige Einrichtung, ~15 Min): **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
 
-Keinen Schlüssel gewünscht? Stattdessen komplett offline → siehe [Offline-Modus](#offline-modus).
+Für die **cleveren Modi** (alles außer reinem Diktat) wählst du eines:
+
+- **Am schnellsten / beste Qualität:** kostenlosen [Groq](https://console.groq.com/keys)-API-Schlüssel holen, im Tray → **Einstellungen** einfügen. Der Text-Schritt läuft dann über Groq, sobald du online bist.
+- **Komplett offline:** [Ollama](https://ollama.com) mit lokalem Modell (z.B. `qwen2.5:7b`) — kein Schlüssel, kein Internet.
+
+Dann in ein beliebiges Textfeld klicken, **`Strg+Umschalt+1`** drücken, sprechen, nochmal drücken — der Text erscheint am Cursor. Stell jederzeit **`vertraulich`** voran, um alles lokal zu halten.
 
 ## Konfiguration
 
-Tray-Symbol → **Einstellungen**. Transkription und Textmodell wählst du **getrennt**:
+Tray-Symbol → **Einstellungen**. API-Schlüssel liegen im **Windows Credential Manager**, nie im Code.
 
-- **Cloud (Standard):** Groq (kostenloses Kontingent) oder OpenAI + eigener API-Schlüssel. Der Schlüssel liegt im **Windows Credential Manager**, nie im Code.
-- **Offline:** beide Anbieter auf *Lokal* — siehe unten.
+- **Transkription:** immer lokal über den whisper.cpp-Server. Server-URL eintragen (Standard `http://127.0.0.1:8765/v1`).
+- **Clever-Modi-Textmodell:** läuft über **Groq**, wenn du online bist und ein Schlüssel hinterlegt ist; sonst Rückfall auf lokales **Ollama**. Das Codewort `vertraulich` erzwingt immer lokal.
 
 ## Offline-Modus
 
 Blixt läuft **komplett offline** über lokale Server:
 
-- **Transkription** → lokaler [whisper.cpp](https://github.com/ggml-org/whisper.cpp)-Server (GPU via CUDA/Vulkan oder CPU)
-- **Textmodell** → [Ollama](https://ollama.com) mit lokalem Modell (z.B. `qwen2.5:7b`)
+- **Transkription** → lokaler [whisper.cpp](https://github.com/ggml-org/whisper.cpp)-Server (GPU via CUDA/Vulkan oder CPU) — wird immer genutzt
+- **Textmodell** → [Ollama](https://ollama.com) mit lokalem Modell (z.B. `qwen2.5:7b`) — genutzt offline, ohne Groq-Schlüssel oder per Codewort `vertraulich`
 
-Das ist **nicht turnkey** — die zwei lokalen Server richtest du selbst ein. Schritt für Schritt: **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
+Das ist **nicht turnkey** — die lokalen Server richtest du selbst ein. Schritt für Schritt: **[docs/OFFLINE-SETUP.md](docs/OFFLINE-SETUP.md)**.
 
 ## Architektur
 
@@ -231,8 +268,8 @@ Schlanke Tauri-2-App (Rust-Kern + WebView2-Oberfläche). Rust-Module unter `app/
 
 | Modul | Aufgabe |
 |-------|---------|
-| `main.rs` | Tray, globale Hotkeys, Ablaufsteuerung |
-| `modes.rs` | Die 8 Modi (Bezeichnung, Hotkey, System-Prompt, Temperatur) |
+| `main.rs` | Tray, globale Hotkeys, Ablaufsteuerung, Datenschutz-Routing |
+| `modes.rs` | Die 8 Modi (Bezeichnung, Hotkey, System-Prompt, Temperatur), Codewort-Erkennung |
 | `provider.rs` | Anbieter-Schicht — OpenAI-kompatible Transkription + Chat (Groq / OpenAI / lokal) |
 | `audio.rs` | Mikrofon (`cpal`) → WAV (`hound`) |
 | `paste.rs` | Auto-Einfügen am Cursor (`enigo` + Win32-Fokus-Wiederherstellung) |
@@ -242,21 +279,24 @@ Kernidee ist die Anbieter-Schicht: Groq, OpenAI und die lokalen Server sprechen 
 
 ## Roadmap
 
-- ✅ 8 Modi, Auto-Einfügen, Cloud + offline
+- ✅ 8 Modi, Auto-Einfügen, lokale Transkription + Cloud/Offline-Clever-Schritt
+- ✅ Datenschutz-Routing (Codewort `vertraulich`, Audio immer lokal)
 - ⏳ Ein-Schritt-Offline-Setup (gebündelte lokale Server)
-- ⏳ Frei konfigurierbare Hotkeys & Halten-zum-Sprechen
+- ⏳ Frei konfigurierbare Hotkeys, Codewort & Halten-zum-Sprechen
 - ⏳ Signierte Release-Builds + Installer
 - ⏳ Mehr Zielsprachen beim Übersetzen
 
 ## Mit einem KI-Agenten gebaut
 
-Blixt entstand in einer einzigen fokussierten Sitzung — von jemandem, der **kein Rust-Entwickler** ist, zusammen mit einem KI-Coding-Agenten: von der Analyse der Original-macOS-App bis zu einem lauffähigen, offline-fähigen nativen Windows-Port. Es ist eine ehrliche Demonstration, wie weit KI-gestützte Entwicklung eine echte native Anwendung tragen kann. Der Code ist menschlich geprüft und läuft; er ist bewusst klein und hackbar, kein poliertes Kommerzprodukt.
+Blixt entstand — von jemandem, der **kein Rust-Entwickler** ist, zusammen mit einem KI-Coding-Agenten: von der Analyse der Original-macOS-App bis zu einem lauffähigen, offline-fähigen nativen Windows-Port. Es ist eine ehrliche Demonstration, wie weit KI-gestützte Entwicklung eine echte native Anwendung tragen kann. Der Code ist menschlich geprüft und läuft; er ist bewusst klein und hackbar, kein poliertes Kommerzprodukt.
 
 ## Credits
 
 Basiert auf [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) von **cmagnussen** (MIT-Lizenz). Blixt ist eine eigenständige Neu-Implementierung für Windows (Tauri/Rust), **kein** Code-Fork — mit **eigenem Namen, Icon und Branding**, wie es der Marken-Hinweis des Originals verlangt.
 
-**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, ein komplett offline-Modus, und zusätzliche Modi (Übersetzen DE→EN und EN→DE, Prompt EN/DE).
+Die Mikrofon-Glyphe im System-Tray stammt von [**Material Design Icons**](https://pictogrammers.com/library/mdi/) (Apache-Lizenz 2.0), in Blixt-Orange eingefärbt.
+
+**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, immer lokale Transkription mit Codewort-Datenschutz-Routing, ein komplett offline-Modus, und zusätzliche Modi (Übersetzen DE→EN und EN→DE, Prompt EN/DE).
 
 ## Mitwirken
 
