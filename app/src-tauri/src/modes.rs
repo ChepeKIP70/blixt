@@ -104,8 +104,8 @@ impl Mode {
             Mode::Emoji => "Emoji",
             Mode::Translate => "Uebersetzen DE→EN",
             Mode::TranslateEnDe => "Uebersetzen EN→DE",
-            Mode::Prompt => "Prompt (EN)",
-            Mode::PromptDe => "Prompt (DE)",
+            Mode::Prompt => "KI-Prompt (EN)",
+            Mode::PromptDe => "KI-Prompt (DE)",
         }
     }
 
@@ -118,8 +118,8 @@ impl Mode {
             Mode::Emoji => "Emojis werden eingefuegt ...",
             Mode::Translate => "Wird uebersetzt ...",
             Mode::TranslateEnDe => "Wird uebersetzt ...",
-            Mode::Prompt => "Prompt wird gebaut ...",
-            Mode::PromptDe => "Prompt wird gebaut ...",
+            Mode::Prompt => "KI-Prompt wird gebaut ...",
+            Mode::PromptDe => "KI-Prompt wird gebaut ...",
         }
     }
 

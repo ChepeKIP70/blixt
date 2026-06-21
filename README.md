@@ -60,19 +60,19 @@ Blixt is an independent **Windows** take, derived from the macOS app [blitztext-
 | `Ctrl+Shift+4` | **Emoji** | Add fitting emojis to your text |
 | `Ctrl+Shift+5` | **Translate DE→EN** | Speak German → get English text |
 | `Ctrl+Shift+6` | **Translate EN→DE** | Speak English → get German text |
-| `Ctrl+Shift+7` | **Prompt (EN)** | Speak a rough idea → a structured AI prompt in English |
-| `Ctrl+Shift+8` | **Prompt (DE)** | Same, output in German |
+| `Ctrl+Shift+7` | **AI Prompt (EN)** | Speak a rough idea → a structured AI prompt in English |
+| `Ctrl+Shift+8` | **AI Prompt (DE)** | Same, output in German |
 
 Toggle recording: press once to start, press again to finish. The result lands on the clipboard and is auto-pasted at the cursor.
 
-The **Prompt** modes produce a 7-field prompt (Role · Objective · Context · Task · Constraints · Output format · Recap), following current prompt-engineering guidance from Anthropic, OpenAI and Google.
+The **AI Prompt** modes produce a 7-field prompt (Role · Objective · Context · Task · Constraints · Output format · Recap), following current prompt-engineering guidance from Anthropic, OpenAI and Google.
 
 ## Privacy & smart routing
 
 Blixt is **private by default for your audio**:
 
 - **Transcription always runs locally** (whisper.cpp) — the audio never leaves your PC.
-- The **smart-mode text step** (Improve, Vent, Emoji, Translate, Prompt) goes to **Groq** by default — *if* you're online and a Groq API key is set — for speed and better quality.
+- The **smart-mode text step** (Improve, Vent, Emoji, Translate, AI Prompt) goes to **Groq** by default — *if* you're online and a Groq API key is set — for speed and better quality.
 - Prefix your dictation with the codeword **`vertraulich`** to force that step **local** too (Ollama). The codeword is stripped from the result.
 - No internet or no key? Blixt **falls back to local automatically** — no error, no interruption.
 
@@ -156,7 +156,7 @@ Based on [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) by **c
 
 The system-tray microphone glyph is from [**Material Design Icons**](https://pictogrammers.com/library/mdi/) (Apache License 2.0), recoloured in the Blixt orange.
 
-**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, always-local transcription with codeword privacy routing, a fully offline mode, and extra modes (Translate DE→EN and EN→DE, Prompt EN/DE).
+**What's different from the original:** Windows instead of macOS, a swappable provider layer (Groq/OpenAI/local) instead of OpenAI-only, always-local transcription with codeword privacy routing, a fully offline mode, and extra modes (Translate DE→EN and EN→DE, AI Prompt EN/DE).
 
 ## Contributing
 
@@ -200,19 +200,19 @@ Blixt ist eine eigenständige **Windows**-Variante, abgeleitet aus der macOS-App
 | `Ctrl+Shift+4` | **Emoji** | Passende Emojis in den Text |
 | `Ctrl+Shift+5` | **Übersetzen DE→EN** | Deutsch sprechen → englischer Text |
 | `Ctrl+Shift+6` | **Übersetzen EN→DE** | Englisch sprechen → deutscher Text |
-| `Ctrl+Shift+7` | **Prompt (EN)** | Grobe Idee sprechen → strukturierter KI-Prompt auf Englisch |
-| `Ctrl+Shift+8` | **Prompt (DE)** | Dasselbe, Ausgabe auf Deutsch |
+| `Ctrl+Shift+7` | **KI-Prompt (EN)** | Grobe Idee sprechen → strukturierter KI-Prompt auf Englisch |
+| `Ctrl+Shift+8` | **KI-Prompt (DE)** | Dasselbe, Ausgabe auf Deutsch |
 
 Toggle-Aufnahme: einmal drücken = Start, nochmal drücken = fertig. Das Ergebnis landet in der Zwischenablage und wird am Cursor eingefügt.
 
-Die **Prompt**-Modi erzeugen einen 7-Felder-Prompt (Rolle · Ziel · Kontext · Aufgabe · Randbedingungen · Ausgabeformat · Kurzfassung), nach aktuellen Prompt-Engineering-Empfehlungen von Anthropic, OpenAI und Google.
+Die **KI-Prompt**-Modi erzeugen einen 7-Felder-Prompt (Rolle · Ziel · Kontext · Aufgabe · Randbedingungen · Ausgabeformat · Kurzfassung), nach aktuellen Prompt-Engineering-Empfehlungen von Anthropic, OpenAI und Google.
 
 ## Datenschutz & cleveres Routing
 
 Blixt ist **für dein Audio standardmäßig privat**:
 
 - **Die Transkription läuft immer lokal** (whisper.cpp) — das Audio verlässt den PC nie.
-- Der **clevere Text-Schritt** (Verbessern, Entschärfen, Emoji, Übersetzen, Prompt) geht standardmäßig an **Groq** — *sofern* du online bist und ein Groq-API-Schlüssel hinterlegt ist — für Tempo und bessere Qualität.
+- Der **clevere Text-Schritt** (Verbessern, Entschärfen, Emoji, Übersetzen, KI-Prompt) geht standardmäßig an **Groq** — *sofern* du online bist und ein Groq-API-Schlüssel hinterlegt ist — für Tempo und bessere Qualität.
 - Stell dem Diktat das Codewort **`vertraulich`** voran, dann bleibt auch dieser Schritt **lokal** (Ollama). Das Codewort wird aus dem Ergebnis entfernt.
 - Kein Internet oder kein Schlüssel? Blixt **fällt automatisch auf lokal zurück** — kein Fehler, kein Abbruch.
 
@@ -296,7 +296,7 @@ Basiert auf [**blitztext-app**](https://github.com/cmagnussen/blitztext-app) von
 
 Die Mikrofon-Glyphe im System-Tray stammt von [**Material Design Icons**](https://pictogrammers.com/library/mdi/) (Apache-Lizenz 2.0), in Blixt-Orange eingefärbt.
 
-**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, immer lokale Transkription mit Codewort-Datenschutz-Routing, ein komplett offline-Modus, und zusätzliche Modi (Übersetzen DE→EN und EN→DE, Prompt EN/DE).
+**Was anders ist:** Windows statt macOS, austauschbare Anbieter-Schicht (Groq/OpenAI/lokal) statt nur OpenAI, immer lokale Transkription mit Codewort-Datenschutz-Routing, ein komplett offline-Modus, und zusätzliche Modi (Übersetzen DE→EN und EN→DE, KI-Prompt EN/DE).
 
 ## Mitwirken
 
